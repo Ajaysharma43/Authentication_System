@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import CryptoJS from "crypto-js";
 
 const Login = () => {
   const Username = useRef();
@@ -9,13 +10,14 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    const remove = async() => {
-        sessionStorage.removeItem('Password')
-        sessionStorage.removeItem('Username')
-    }
+  useEffect(() => {
+    const remove = async () => {
+      localStorage.removeItem("Password");
+      localStorage.removeItem("Username");
+      localStorage.removeItem("token");
+    };
     remove();
-  })
+  });
 
   const VerifyUser = async (event) => {
     event.preventDefault();
@@ -25,16 +27,39 @@ const Login = () => {
     const password = Password.current.value;
 
     if (username !== "" && email !== "" && password !== "") {
-      const response = await axios.post("http://localhost:3000/Authentication/Login", {
-        username,
-        email,
-        password,
-      });
-      if(response.data == "authorized")
-      {
-        sessionStorage.setItem('Username',username)
-        sessionStorage.setItem('Password',password)
-        navigate('/AdminUsersPage')
+      const response = await axios.post(
+        "http://localhost:3000/Authentication/Login",
+        {
+          username,
+          email,
+          password,
+        }
+      );
+      if (response.data == "authorized") {
+        const token = "isAuthenticated";
+
+        const encryptedUsername = CryptoJS.AES.encrypt(
+          username,
+          "encrypt009"
+        ).toString();
+        const encryptedPassword = CryptoJS.AES.encrypt(
+          password,
+          "encrypt009"
+        ).toString();
+        const encryptedToken = CryptoJS.AES.encrypt(
+          token,
+          "encrypt009"
+        ).toString();
+
+        console.log("Encrypted Username:", encryptedUsername);
+        console.log("Encrypted Password:", encryptedPassword);
+        console.log("Encrypted Token:", encryptedToken);
+
+        sessionStorage.setItem("Username", encryptedUsername);
+        sessionStorage.setItem("Password", encryptedPassword);
+        sessionStorage.setItem("token", encryptedToken);
+
+        navigate("/AdminUsersPage");
       }
     }
   };
@@ -42,11 +67,16 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-50 to-gray-100">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-        <h2 className="text-2xl font-semibold text-gray-700 text-center mb-6">Welcome Back</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 text-center mb-6">
+          Welcome Back
+        </h2>
         <form onSubmit={(event) => VerifyUser(event)}>
           {/* Username */}
           <div className="mb-4">
-            <label htmlFor="Username" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="Username"
+              className="block text-sm font-medium text-gray-700"
+            >
               Username
             </label>
             <input
@@ -61,7 +91,10 @@ const Login = () => {
 
           {/* Email */}
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email Address
             </label>
             <input
@@ -76,7 +109,10 @@ const Login = () => {
 
           {/* Password */}
           <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -108,7 +144,10 @@ const Login = () => {
         {/* Forgot Password */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Forgot your password?{" "}
-          <a href="#" className="text-indigo-600 hover:underline focus:outline-none">
+          <a
+            href="#"
+            className="text-indigo-600 hover:underline focus:outline-none"
+          >
             Reset it
           </a>
         </p>
