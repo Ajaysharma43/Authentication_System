@@ -1,26 +1,58 @@
-import React from "react";
+import axios from "axios";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+  const Username = useRef();
+  const Email = useRef();
+  const Password = useRef();
+
+  const VerifyUser = async (event) => {
+    event.preventDefault();
+
+    const username = Username.current.value;
+    const email = Email.current.value;
+    const password = Password.current.value;
+
+    if (username !== "" && email !== "" && password !== "") {
+      const response = await axios.get("http://localhost:3000/Authentication/Login", {
+        username,
+        email,
+        password,
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-50 to-gray-100">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-        <h2 className="text-2xl font-semibold text-gray-700 text-center mb-6">
-          Welcome Back
-        </h2>
-        <form>
+        <h2 className="text-2xl font-semibold text-gray-700 text-center mb-6">Welcome Back</h2>
+        <form onSubmit={(event) => VerifyUser(event)}>
+          {/* Username */}
+          <div className="mb-4">
+            <label htmlFor="Username" className="block text-sm font-medium text-gray-700">
+              Username
+            </label>
+            <input
+              type="text"
+              id="Username"
+              ref={Username}
+              placeholder="Enter Your Username"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"
+              required
+            />
+          </div>
+
           {/* Email */}
           <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email Address
             </label>
             <input
               type="email"
               id="email"
-              placeholder="example@email.com"
+              ref={Email}
+              placeholder="Enter Your Email"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"
               required
             />
@@ -28,15 +60,13 @@ const Login = () => {
 
           {/* Password */}
           <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
               type="password"
               id="password"
+              ref={Password}
               placeholder="********"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"
               required
@@ -59,15 +89,10 @@ const Login = () => {
           <div className="border-t border-gray-300 flex-grow"></div>
         </div>
 
-       
-
         {/* Forgot Password */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Forgot your password?{" "}
-          <a
-            href="#"
-            className="text-indigo-600 hover:underline focus:outline-none"
-          >
+          <a href="#" className="text-indigo-600 hover:underline focus:outline-none">
             Reset it
           </a>
         </p>
@@ -75,12 +100,8 @@ const Login = () => {
         {/* Footer */}
         <p className="text-center text-sm text-gray-600 mt-4">
           Don't have an account?{" "}
-          <span
-            className="text-indigo-600 hover:underline focus:outline-none"
-          >
-            <Link to={'/Signup'}>
-            Sign up
-            </Link>
+          <span className="text-indigo-600 hover:underline focus:outline-none">
+            <Link to={"/Signup"}>Sign up</Link>
           </span>
         </p>
       </div>
