@@ -1,11 +1,21 @@
 import axios from "axios";
-import React, { useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const Username = useRef();
   const Email = useRef();
   const Password = useRef();
+
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    const remove = async() => {
+        sessionStorage.removeItem('Password')
+        sessionStorage.removeItem('Username')
+    }
+    remove();
+  })
 
   const VerifyUser = async (event) => {
     event.preventDefault();
@@ -15,11 +25,17 @@ const Login = () => {
     const password = Password.current.value;
 
     if (username !== "" && email !== "" && password !== "") {
-      const response = await axios.get("http://localhost:3000/Authentication/Login", {
+      const response = await axios.post("http://localhost:3000/Authentication/Login", {
         username,
         email,
         password,
       });
+      if(response.data == "authorized")
+      {
+        sessionStorage.setItem('Username',username)
+        sessionStorage.setItem('Password',password)
+        navigate('/AdminUsersPage')
+      }
     }
   };
 
