@@ -11,7 +11,8 @@ const Admin_Page = () => {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);  // Added loading state
   const [Sidebar, setSidebar] = useState(294);
-  const [Drawer,setDrawer] = useState('hidden')
+  const [Drawer,setDrawer] = useState('block')
+  const [DrawerValue , setDrawerValue] = useState('Hide')
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,18 +42,33 @@ const Admin_Page = () => {
     return null;  
   }
 
+  const DrawerState = () => {
+    if(Drawer == 'block')
+    {
+      setDrawer('hidden')
+      setDrawerValue('Show')
+    }
+    else
+    {
+      setDrawer('block')
+      setDrawerValue('Hide')
+    }
+  }
+
   return (
     <article className="w-full flex">
       <section className="hidden lg:block sm:block" style={{ width: `${Sidebar}px` }}>
-        <SidebarLayout />
+        <SidebarLayout Drawer={Drawer} />
       </section>
 
-      <section className={`block lg:hidden sm:hidden`}>
-        <Drawers/>
+      <section className={`${Drawer} lg:hidden sm:hidden`}>
+      <div>
+      <Drawers />
+      </div>
       </section>
 
       <section className="w-[calc(100%)]">
-        <button className="fixed w-full text-right">Show</button>
+        <button className="fixed left-[93%] text-right lg:hidden sm:hidden" onClick={()=>DrawerState()}>{DrawerValue}</button>
         <AdminUsersPage />
       </section>
     </article>

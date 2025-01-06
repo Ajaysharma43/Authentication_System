@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Drawers = () => {
+const Drawers = ({Drawer}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
