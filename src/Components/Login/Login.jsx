@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 
 const Login = () => {
+  const APIURL = import.meta.env.VITE_API_KEY;
+
   const Username = useRef();
   const Email = useRef();
   const Password = useRef();
@@ -28,7 +30,7 @@ const Login = () => {
 
     if (username !== "" && email !== "" && password !== "") {
       const response = await axios.post(
-        "http://localhost:3000/Authentication/Login",
+        `${APIURL}/Authentication/Login`,
         {
           username,
           email,

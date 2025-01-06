@@ -5,6 +5,8 @@ import { ToastContainer, toast, Bounce, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
+  const APIURL = import.meta.env.VITE_API_KEY;
+
   const [Show,setShow] = useState('Show')
   const [Confirm,setConfirm] = useState('Show')
   const Username = useRef();
@@ -54,7 +56,7 @@ const Signup = () => {
           });
         } else {
           const data = await axios.post(
-            "http://localhost:3000/Authentication/Signup",
+            `${APIURL}/Authentication/Signup`,
             { username, email, password }
           );
           if (data.data == "existed") {
@@ -108,7 +110,6 @@ const Signup = () => {
           Create an Account
         </h2>
         <form onSubmit={(event) => SendData(event)}>
-          {/* Name */}
           <div className="mb-4">
             <label
               htmlFor="name"
@@ -126,7 +127,6 @@ const Signup = () => {
             />
           </div>
 
-          {/* Email */}
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -144,7 +144,7 @@ const Signup = () => {
             />
           </div>
 
-          {/* Password */}
+
           <div className="mb-4 relative">
             <label
               htmlFor="password"
@@ -168,7 +168,7 @@ const Signup = () => {
               {Show}
             </button>
           </div>
-          {/* Confirm Password */}
+
           <div className="mb-6 relative">
             <label
               htmlFor="confirm-password"
@@ -193,7 +193,6 @@ const Signup = () => {
             </button>
           </div>
 
-          {/* Sign Up Button */}
           <button
             type="submit"
             className="w-full px-4 py-2 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -202,16 +201,12 @@ const Signup = () => {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="mt-6 flex items-center">
           <div className="border-t border-gray-300 flex-grow"></div>
           <span className="mx-4 text-sm text-gray-500">or</span>
           <div className="border-t border-gray-300 flex-grow"></div>
         </div>
 
-        {/* Social Login */}
-
-        {/* Footer */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
           <span className="text-blue-600 hover:underline focus:outline-none">
