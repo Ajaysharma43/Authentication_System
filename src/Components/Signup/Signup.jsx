@@ -40,7 +40,7 @@ const Signup = () => {
             transition: Zoom,
           });
         }
-        if (username.length >= 13) {
+        else if (username.length >= 13) {
           toast.warn("Username Is Too Long", {
             position: "top-right",
             autoClose: 5000,
@@ -70,7 +70,7 @@ const Signup = () => {
               transition: Zoom,
             });
           } else if (data.data == "created") {
-            navigate("/SignupSuccess");
+            navigate("/Login");
           }
         }
       } else {

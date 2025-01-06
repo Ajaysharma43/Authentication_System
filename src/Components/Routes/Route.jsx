@@ -11,7 +11,7 @@ const Route = () => {
         {element:<Signup/>,path:"/Signup"},
         {element:<Login/>,path:"/Login"},
         {element:<SignupSuccess/>,path:"/SignupSuccess"},
-        {element:<Admin_Page/>,path:"/AdminUsersPage"},
+        {element:<Admin_Page/>,path:"/Dashboard"},
         {element:<SidebarLayout/>,path:'/Sidebar'}
     ])
     return route
