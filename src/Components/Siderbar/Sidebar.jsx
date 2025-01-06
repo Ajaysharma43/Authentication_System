@@ -5,13 +5,13 @@ const SidebarLayout = () => {
 
   return (
       <div
-        className={`fixed top-0 left-0 h-full bg-blue-600 text-white p-6 transform ${
+        className={`top-0 left-0 h-full bg-blue-600 text-white p-6 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out w-64 lg:translate-x-0`}
+        } transition-transform duration-300 ease-in-out sm:translate-x-0`}
       >
-        <h2 className="text-2xl font-bold mb-6">My Sidebar</h2>
+        <h2 className="text-2xl font-bold mb-6 break-all whitespace-pre-wrap">My Sidebar</h2>
         <nav>
-          <ul className="space-y-4">
+          <ul className="space-y-4 break-all whitespace-pre-wrap">
             <li>
               <a
                 href="#"

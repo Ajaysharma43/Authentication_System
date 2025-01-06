@@ -167,9 +167,9 @@ const AdminUsersPage = () => {
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">
           Admin Users Page
         </h2>
-        <table className="min-w-full bg-white border border-gray-200 w-full">
+        <table className="min-w-full bg-white border border-gray-200 w-">
           <thead>
-            <tr className="bg-gradient-to-r from-purple-400 to-blue-600 text-white">
+            <tr className="bg-gradient-to-r from-purple-400 to-blue-600 text-white break-all whitespace-pre-wrap">
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-600">
                 Name
               </th>
@@ -179,15 +179,15 @@ const AdminUsersPage = () => {
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-600">
                 Password
               </th>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-600 break-all whitespace-pre-wrap">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody>
             {Data.map((item) => (
-              <tr key={item._id} className="border-b hover:bg-gray-50 w-full">
-                <td className="py-2 px-4 text-sm text-gray-700 w-full">{item.Username}</td>
+              <tr key={item._id} className="border-b hover:bg-gray-50 break-all whitespace-pre-wrap">
+                <td className="py-2 px-4 text-sm text-gray-700">{item.Username}</td>
                 <td className="py-2 px-4 text-sm text-gray-700">{item.Email}</td>
                 <td className="py-2 px-4 text-sm text-gray-700">{item.Password}</td>
                 <td className="py-2 px-4 text-sm text-gray-700">
@@ -210,7 +210,7 @@ const AdminUsersPage = () => {
         </table>
         <Link to={'/Signup'}>
         <button
-          className="mt-6 w-full px-6 py-3 bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold rounded-md shadow-lg hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          className="break-all whitespace-pre-wrap mt-6 w-full px-6 py-3 bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold rounded-md shadow-lg hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
           onClick={() => console.log("Add User")}
         >
           Add User

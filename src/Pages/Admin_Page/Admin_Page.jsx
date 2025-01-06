@@ -7,6 +7,8 @@ import SidebarLayout from "../../Components/Siderbar/Sidebar";
 const Admin_Page = () => {
   const [token, setToken] = useState("");
 
+  const [Sidebar,setSidebar] = useState(294)
+
   useEffect(() => {
     const EncryptedToken = sessionStorage.getItem("token");
     if (EncryptedToken) {
@@ -28,11 +30,11 @@ const Admin_Page = () => {
       {token ? (
         <article className="w-full flex">
 
-          <section className="w-[16%]">
+          <section className="lg:block sm:hidden" style={{width:`${Sidebar}px`}}>
             <SidebarLayout/>
           </section>
 
-          <section className="w-[calc(100%-16%)]">
+          <section className={`w-[calc(100%)]`}>
           <AdminUsersPage />
           </section>
 
