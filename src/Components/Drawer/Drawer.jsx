@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
-const SidebarLayout = () => {
+const Drawers = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
       <div
-        className={`top-0 left-0 h-full bg-blue-600 text-white p-6 transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 left-0 h-full bg-blue-600 text-white p-6 transform ${
+          isOpen ? "translate-x-1" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out translate-x-0`}
       >
         <h2 className="text-2xl font-bold mb-6 break-all whitespace-pre-wrap">My Sidebar</h2>
@@ -50,4 +50,4 @@ const SidebarLayout = () => {
   );
 };
 
-export default SidebarLayout;
+export default Drawers;
