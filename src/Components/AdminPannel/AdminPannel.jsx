@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 const AdminUsersPage = () => {
   const APIURL = import.meta.env.VITE_API_KEY;
-  
+
   const [Data, setData] = useState([]);
   const [BackupData, SetBackupData] = useState([]);
   const [SingleUser, SetSingleUser] = useState({});
@@ -383,7 +383,7 @@ const AdminUsersPage = () => {
                   </td>
                   <td className="py-2 px-4 text-sm text-gray-700">
                     <button
-                      className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-4 py-2 rounded-md"
+                      className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-4 py-2 rounded-md p-[10px]"
                       onClick={() => GetUser(item._id)}
                     >
                       Edit
