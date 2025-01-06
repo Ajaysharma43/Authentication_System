@@ -162,12 +162,12 @@ const AdminUsersPage = () => {
       </Dialog>
 
 
-    <div className="min-h-screen bg-gradient-to-r from-blue-400 to-blue-600 py-8 px-4">
-      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <div className="min-h-screen bg-gradient-to-r from-blue-400 to-blue-600 py-8 px-4 w-full">
+      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6 w-full">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">
           Admin Users Page
         </h2>
-        <table className="min-w-full bg-white border border-gray-200">
+        <table className="min-w-full bg-white border border-gray-200 w-full">
           <thead>
             <tr className="bg-gradient-to-r from-purple-400 to-blue-600 text-white">
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-600">
@@ -186,8 +186,8 @@ const AdminUsersPage = () => {
           </thead>
           <tbody>
             {Data.map((item) => (
-              <tr key={item._id} className="border-b hover:bg-gray-50">
-                <td className="py-2 px-4 text-sm text-gray-700">{item.Username}</td>
+              <tr key={item._id} className="border-b hover:bg-gray-50 w-full">
+                <td className="py-2 px-4 text-sm text-gray-700 w-full">{item.Username}</td>
                 <td className="py-2 px-4 text-sm text-gray-700">{item.Email}</td>
                 <td className="py-2 px-4 text-sm text-gray-700">{item.Password}</td>
                 <td className="py-2 px-4 text-sm text-gray-700">

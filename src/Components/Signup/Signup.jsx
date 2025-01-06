@@ -1,55 +1,113 @@
 import axios from "axios";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast, Bounce, Zoom } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
+  const [Show,setShow] = useState('Show')
+  const [Confirm,setConfirm] = useState('Show')
+  const Username = useRef();
+  const Email = useRef();
+  const Password = useRef();
+  const ConfirmPasword = useRef();
 
-    const Username = useRef();
-    const Email = useRef();
-    const Password = useRef();
-    const ConfirmPasword = useRef();
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-
-    const SendData = async (event) => {
-
-        event.preventDefault();
-        const username = Username.current.value;
-        const email = Email.current.value;
-        const password = Password.current.value;
-        const confirmpassoword = ConfirmPasword.current.value;
-        if(password == confirmpassoword)
-        {
-            if(username != "" && email != "" && password != "" && confirmpassoword != "")
-            {
-                const data = await axios.post('http://localhost:3000/Authentication/Signup',{username,email,password})
-                if(data.data == "existed")
-                {
-                    console.log("existed");
-                }
-                else if(data.data == "created")
-                {
-                    navigate('/SignupSuccess')
-                }
-            }
-            else
-            {
-                console.log("data is incomplete");
-            }
+  const SendData = async (event) => {
+    event.preventDefault();
+    const username = Username.current.value;
+    const email = Email.current.value;
+    const password = Password.current.value;
+    const confirmpassoword = ConfirmPasword.current.value;
+    if (password == confirmpassoword) {
+      if (
+        username != "" &&
+        email != "" &&
+        password != "" &&
+        confirmpassoword != ""
+      ) {
+        if (username.length <= 5) {
+          toast.warn("Username Is Too Sort", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Zoom,
+          });
         }
-        else
-        {
-            console.log("passoword not match");
+        if (username.length >= 13) {
+          toast.warn("Username Is Too Long", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Zoom,
+          });
+        } else {
+          const data = await axios.post(
+            "http://localhost:3000/Authentication/Signup",
+            { username, email, password }
+          );
+          if (data.data == "existed") {
+            toast.error("Email Already In Use", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Zoom,
+            });
+          } else if (data.data == "created") {
+            navigate("/SignupSuccess");
+          }
         }
-        
+      } else {
+        console.log("data is incomplete");
+      }
+    } else {
+      console.log("passoword not match");
     }
+  };
+
+  const ShowPassword = async () => {
+    if (Password.current.type == "password") {
+      Password.current.type = "text";
+      setShow('Hide')
+    } else {
+      Password.current.type = "password";
+      setShow('Show')
+    }
+  };
+
+  const ShowConfirmPassword = async () => {
+    if (ConfirmPasword.current.type == "password") {
+      ConfirmPasword.current.type = "text";
+      setConfirm('Hide')
+    } else {
+      ConfirmPasword.current.type = "password";
+      setConfirm('Show')
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
         <h2 className="text-2xl font-semibold text-blue-700 text-center mb-6">
           Create an Account
         </h2>
-        <form onSubmit={(event)=>SendData(event)}>
+        <form onSubmit={(event) => SendData(event)}>
           {/* Name */}
           <div className="mb-4">
             <label
@@ -87,7 +145,7 @@ const Signup = () => {
           </div>
 
           {/* Password */}
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
@@ -102,10 +160,16 @@ const Signup = () => {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700"
               required
             />
+            <button
+              type="button"
+              onClick={ShowPassword}
+              className="absolute right-3 top-10 text-blue-600 hover:text-blue-800 focus:outline-none text-sm font-medium"
+            >
+              {Show}
+            </button>
           </div>
-
           {/* Confirm Password */}
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label
               htmlFor="confirm-password"
               className="block text-sm font-medium text-gray-700"
@@ -120,6 +184,13 @@ const Signup = () => {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700"
               required
             />
+            <button
+              type="button"
+              onClick={ShowConfirmPassword}
+              className="absolute right-3 top-10 text-blue-600 hover:text-blue-800 focus:outline-none text-sm font-medium"
+            >
+              {Confirm}
+            </button>
           </div>
 
           {/* Sign Up Button */}
@@ -139,20 +210,28 @@ const Signup = () => {
         </div>
 
         {/* Social Login */}
-        
 
         {/* Footer */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
-          <span
-            className="text-blue-600 hover:underline focus:outline-none"
-          >
-            <Link to={'/Login'}>
-            Log in
-            </Link>
+          <span className="text-blue-600 hover:underline focus:outline-none">
+            <Link to={"/Login"}>Log in</Link>
           </span>
         </p>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Bounce}
+      />
     </div>
   );
 };
