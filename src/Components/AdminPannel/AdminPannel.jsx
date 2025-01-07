@@ -3,7 +3,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { ToastContainer, toast, Bounce, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Pagination from '@mui/material/Pagination'
+import Pagination from "@mui/material/Pagination";
 
 const AdminUsersPage = () => {
   const APIURL = import.meta.env.VITE_API_KEY;
@@ -39,10 +39,8 @@ const AdminUsersPage = () => {
       setIsLoading(false);
     }
   };
-    
 
   useEffect(() => {
-   
     GetData();
   }, [CurrentPage]);
 
@@ -64,11 +62,10 @@ const AdminUsersPage = () => {
     if (DeleteUser.data === "removed") {
       const UpdatedData = Data.filter((item) => item._id !== Id);
       setData(UpdatedData);
-      if(UpdatedData.length == 0)
-      {
-        SetCurrentPage(CurrentPage-1)
+      if (UpdatedData.length == 0) {
+        SetCurrentPage(CurrentPage - 1);
       }
-      GetData()
+      GetData();
       setDeleteDilog(false);
     }
   };
@@ -200,10 +197,12 @@ const AdminUsersPage = () => {
             password,
           });
           if (data.data === "created") {
-            const UpdatedData = await axios.get(`${APIURL}/Data/UsersData?limit=2&page=${CurrentPage}`);
+            const UpdatedData = await axios.get(
+              `${APIURL}/Data/UsersData?limit=2&page=${CurrentPage}`
+            );
             setData(UpdatedData.data.UsersData);
 
-            GetData()
+            GetData();
 
             toast.success("User is created", {
               position: "top-right",
@@ -415,8 +414,6 @@ const AdminUsersPage = () => {
             />
           </div>
 
-          
-
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr className="bg-gradient-to-r from-purple-400 to-blue-600 text-white break-all whitespace-pre-wrap">
@@ -470,7 +467,7 @@ const AdminUsersPage = () => {
 
           <div className="flex gap-5 justify-center">
             <button
-            className="bg-gradient-to-r from-yellow-300 to-yellow-400 h-[40px] w-[70px] rounded-md text-white uppercase focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+              className="bg-gradient-to-r from-yellow-300 to-yellow-400 h-[40px] w-[70px] rounded-md text-white uppercase focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
               onClick={() => {
                 if (CurrentPage <= 1) {
                   SetCurrentPage(1);
@@ -481,9 +478,14 @@ const AdminUsersPage = () => {
             >
               Prev
             </button>
-            <Pagination count={TotalPage} page={CurrentPage} hideNextButton hidePrevButton/>
+            <Pagination
+              count={TotalPage}
+              page={CurrentPage}
+              hideNextButton
+              hidePrevButton
+            />
             <button
-            className="bg-gradient-to-r from-emerald-400 to-emerald-500 h-[40px] w-[70px] rounded-md text-white uppercase focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2"
+              className="bg-gradient-to-r from-emerald-400 to-emerald-500 h-[40px] w-[70px] rounded-md text-white uppercase focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2"
               onClick={() => {
                 if (CurrentPage >= TotalPage) {
                   SetCurrentPage(TotalPage);
