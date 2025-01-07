@@ -1,18 +1,10 @@
 import { Dialog, DialogContent } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useRef, useState,useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { ToastContainer, toast, Bounce, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { motion, Reorder } from "motion/react";
-
-function debounce(func, delay) {
-  let timeoutId;
-  return function (...args) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), delay);
-  };
-}
 
 const AdminUsersPage = () => {
   const APIURL = import.meta.env.VITE_API_KEY;
@@ -23,8 +15,10 @@ const AdminUsersPage = () => {
   const [DeleteDilog, setDeleteDilog] = useState(false);
   const [UpdateDilog, setUpdateDilog] = useState(false);
   const [CreateDilog, SetCreateDilog] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [CurrentPage, SetCurrentPage] = useState(1);
+  const [TotalPage, SetTotalPage] = useState();
 
   const Username = useRef();
   const Password = useRef();
@@ -34,10 +28,13 @@ const AdminUsersPage = () => {
   useEffect(() => {
     const GetData = async () => {
       try {
-        setIsLoading(true);
-        const UsersData = await axios.get(`${APIURL}/Data/UsersData`);
-        setData(UsersData.data);
+        const UsersData = await axios.get(
+          `${APIURL}/Data/UsersData?limit=2&page=${CurrentPage}`
+        );
+        setData(UsersData.data.UsersData);
+        SetTotalPage(UsersData.data.TotalPages);
         SetBackupData(UsersData.data);
+        console.log(TotalPage);
       } catch (error) {
         console.error("Error fetching data", error);
       } finally {
@@ -45,7 +42,7 @@ const AdminUsersPage = () => {
       }
     };
     GetData();
-  }, []);
+  }, [CurrentPage]);
 
   const GetSingleUser = (id) => {
     const FindSingleUser = Data.find((User) => User._id === id);
@@ -73,7 +70,7 @@ const AdminUsersPage = () => {
     e.preventDefault();
     const id = SingleUser._id;
     if (Username.length <= 5) {
-      toast.warn("Username Is Too Sort", {
+      toast.warn("Username Is Too Short", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -127,25 +124,28 @@ const AdminUsersPage = () => {
     }
   };
 
-  const FindUser = useCallback(() => {
+  const FindUser = () => {
     if (!searchTerm.trim()) {
       setData(BackupData);
       return;
     }
-  
+
     const filteredUsers = BackupData.filter(
       (user) =>
         user.Username.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.Email.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setData(filteredUsers);
-  }, [searchTerm, BackupData]);
-  
+    console.log(filteredUsers);
+  };
+
   useEffect(() => {
-    const debouncedFind = debounce(FindUser, 2000);
-    debouncedFind();
-    return () => clearTimeout(debouncedFind);
-  }, [searchTerm, FindUser]);
+    let debounce = setTimeout(() => {
+      FindUser();
+    }, 1000);
+
+    return () => clearTimeout(debounce);
+  }, [searchTerm]);
 
   const ResetSearch = () => {
     setData(BackupData);
@@ -159,10 +159,10 @@ const AdminUsersPage = () => {
     const password = Password.current.value;
     const confirm = Confirm.current.value;
 
-    if (password == confirm) {
-      if (username != "" && email != "" && password != "" && confirm != "") {
+    if (password === confirm) {
+      if (username && email && password && confirm) {
         if (username.length <= 5) {
-          toast.warn("Username Is Too Sort", {
+          toast.warn("Username Is Too Short", {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -191,7 +191,7 @@ const AdminUsersPage = () => {
             email,
             password,
           });
-          if (data.data == "created") {
+          if (data.data === "created") {
             const UpdatedData = await axios.get(`${APIURL}/Data/UsersData`);
             setData(UpdatedData.data);
 
@@ -216,7 +216,10 @@ const AdminUsersPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-600" role="status">
+        <div
+          className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-600"
+          role="status"
+        >
           <span className="sr-only">Loading...</span>
         </div>
       </div>
@@ -393,27 +396,49 @@ const AdminUsersPage = () => {
           </h2>
 
           <div className="mb-4 flex items-center space-x-2">
-          <input
-            type="text"
-            placeholder="Search by name or email..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              debouncedFindUser();
-            }}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md"
-          />
-          <button
-            className="px-6 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700"
-            onClick={ResetSearch}
-          >
-            Reset
-          </button>
-        </div>
+            <input
+              type="text"
+              placeholder="Search by name or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md"
+            />
+            <button
+              className="px-6 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700"
+              onClick={ResetSearch}
+            >
+              Reset
+            </button>
+          </div>
+
+          <div>
+            <button
+              onClick={() => {
+                if (CurrentPage <= 1) {
+                  SetCurrentPage(1);
+                } else {
+                  SetCurrentPage(CurrentPage - 1);
+                }
+              }}
+            >
+              Prev
+            </button>
+            <h1>{CurrentPage}</h1>
+            <button
+              onClick={() => {
+                if (CurrentPage >= TotalPage) {
+                  SetCurrentPage(TotalPage);
+                } else {
+                  SetCurrentPage(CurrentPage + 1);
+                }
+              }}
+            >
+              Next
+            </button>
+          </div>
 
           <table className="min-w-full bg-white border border-gray-200">
-            <motion.thead
-            >
+            <thead>
               <tr className="bg-gradient-to-r from-purple-400 to-blue-600 text-white break-all whitespace-pre-wrap">
                 <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-600">
                   Name
@@ -428,52 +453,47 @@ const AdminUsersPage = () => {
                   Actions
                 </th>
               </tr>
-            </motion.thead>
+            </thead>
             <tbody>
-              
-                {Data.length === 0 ? (<><div className="text-center text-gray-500">No users found.</div></>):
-                (Data.map((item, index) => (
-                  
-                    <motion.tr
-                      key={item._id}
-                      className="border-b hover:bg-gray-50 break-all whitespace-pre-wrap"
+              {Data.map((item) => (
+                <tr
+                  key={item._id}
+                  className="border-b hover:bg-gray-50 break-all whitespace-pre-wrap"
+                >
+                  <td className="py-2 px-4 text-sm text-gray-700">
+                    {item.Username}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-700">
+                    {item.Email}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-700">
+                    {item.Password}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-700">
+                    <button
+                      className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-4 py-2 rounded-md mr-[5%]"
+                      onClick={() => GetUser(item._id)}
                     >
-                      <td className="py-2 px-4 text-sm text-gray-700">
-                        {item.Username}
-                      </td>
-                      <td className="py-2 px-4 text-sm text-gray-700">
-                        {item.Email}
-                      </td>
-                      <td className="py-2 px-4 text-sm text-gray-700">
-                        {item.Password}
-                      </td>
-                      <td className="py-2 px-4 text-sm text-gray-700">
-                        <button
-                          className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-4 py-2 rounded-md mr-[5%]"
-                          onClick={() => GetUser(item._id)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-md"
-                          onClick={() => GetSingleUser(item._id)}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </motion.tr>
-                 
-                )))}
-              
+                      Edit
+                    </button>
+                    <button
+                      className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-md"
+                      onClick={() => GetSingleUser(item._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
 
-          <motion.button
+          <button
             className="mt-6 w-full px-6 py-3 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-md shadow-lg"
             onClick={() => SetCreateDilog(true)}
           >
             Add User
-          </motion.button>
+          </button>
         </div>
         <ToastContainer
           position="top-right"
