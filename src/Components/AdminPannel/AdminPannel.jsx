@@ -25,22 +25,25 @@ const AdminUsersPage = () => {
   const Email = useRef();
   const Confirm = useRef();
 
+  const GetData = async () => {
+    try {
+      const UsersData = await axios.get(
+        `${APIURL}/Data/UsersData?limit=2&page=${CurrentPage}`
+      );
+      setData(UsersData.data.UsersData);
+      SetTotalPage(UsersData.data.TotalPages);
+      SetBackupData(UsersData.data);
+      console.log(TotalPage);
+    } catch (error) {
+      console.error("Error fetching data", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+    
+
   useEffect(() => {
-    const GetData = async () => {
-      try {
-        const UsersData = await axios.get(
-          `${APIURL}/Data/UsersData?limit=2&page=${CurrentPage}`
-        );
-        setData(UsersData.data.UsersData);
-        SetTotalPage(UsersData.data.TotalPages);
-        SetBackupData(UsersData.data);
-        console.log(TotalPage);
-      } catch (error) {
-        console.error("Error fetching data", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+   
     GetData();
   }, [CurrentPage]);
 
@@ -62,6 +65,11 @@ const AdminUsersPage = () => {
     if (DeleteUser.data === "removed") {
       const UpdatedData = Data.filter((item) => item._id !== Id);
       setData(UpdatedData);
+      if(UpdatedData.length == 0)
+      {
+        SetCurrentPage(CurrentPage-1)
+      }
+      GetData()
       setDeleteDilog(false);
     }
   };
@@ -126,11 +134,12 @@ const AdminUsersPage = () => {
 
   const FindUser = () => {
     if (!searchTerm.trim()) {
-      setData(BackupData);
+      setData(BackupData.UsersData);
+      console.log(BackupData);
       return;
     }
 
-    const filteredUsers = BackupData.filter(
+    const filteredUsers = BackupData.UsersData.filter(
       (user) =>
         user.Username.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.Email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -192,8 +201,10 @@ const AdminUsersPage = () => {
             password,
           });
           if (data.data === "created") {
-            const UpdatedData = await axios.get(`${APIURL}/Data/UsersData`);
-            setData(UpdatedData.data);
+            const UpdatedData = await axios.get(`${APIURL}/Data/UsersData?limit=2&page=${CurrentPage}`);
+            setData(UpdatedData.data.UsersData);
+
+            GetData()
 
             toast.success("User is created", {
               position: "top-right",
@@ -403,16 +414,11 @@ const AdminUsersPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-md"
             />
-            <button
-              className="px-6 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700"
-              onClick={ResetSearch}
-            >
-              Reset
-            </button>
           </div>
 
-          <div>
+          <div className="flex gap-5 justify-center">
             <button
+            className="bg-gradient-to-r from-yellow-300 to-yellow-400 h-[40px] w-[70px] rounded-md text-white uppercase"
               onClick={() => {
                 if (CurrentPage <= 1) {
                   SetCurrentPage(1);
@@ -423,8 +429,9 @@ const AdminUsersPage = () => {
             >
               Prev
             </button>
-            <h1>{CurrentPage}</h1>
+            <h1 className="bg-gradient-to-l from-rose-500 to-yellow-400 h-[40px] w-[70px] rounded-md text-white uppercase text-center pt-2">{CurrentPage}</h1>
             <button
+            className="bg-gradient-to-r from-emerald-400 to-emerald-500 h-[40px] w-[70px] rounded-md text-white uppercase"
               onClick={() => {
                 if (CurrentPage >= TotalPage) {
                   SetCurrentPage(TotalPage);
