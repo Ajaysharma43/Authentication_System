@@ -27,7 +27,7 @@ const AdminUsersPage = () => {
   const GetData = async () => {
     try {
       const UsersData = await axios.get(
-        `${APIURL}/Data/UsersData?limit=2&page=${CurrentPage}`
+        `${APIURL}/Data/UsersData?limit=3&page=${CurrentPage}`
       );
       setData(UsersData.data.UsersData);
       SetTotalPage(UsersData.data.TotalPages);
