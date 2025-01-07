@@ -61,7 +61,7 @@ const Login = () => {
         sessionStorage.setItem("Password", encryptedPassword);
         sessionStorage.setItem("token", encryptedToken);
 
-        navigate('/AdminUsersPage');
+        navigate('/Dashboard');
       }
     }
   };
