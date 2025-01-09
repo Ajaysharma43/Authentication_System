@@ -1,13 +1,24 @@
-import { Dialog, DialogContent } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  Select,
+  MenuItem,
+  InputLabel,
+  Box,
+  FormControl,
+  useRadioGroup,
+} from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { ToastContainer, toast, Bounce, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Pagination from "@mui/material/Pagination";
+import { A_Z_Sort, Date_Sort } from "./SortingFunctions/SortingFunctions";
 
 const AdminUsersPage = () => {
   const APIURL = import.meta.env.VITE_API_KEY;
 
+  const [Fulldata , setFulldata] = useState([])
   const [Data, setData] = useState([]);
   const [BackupData, SetBackupData] = useState([]);
   const [SingleUser, SetSingleUser] = useState({});
@@ -18,6 +29,9 @@ const AdminUsersPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [CurrentPage, SetCurrentPage] = useState(1);
   const [TotalPage, SetTotalPage] = useState();
+  const [Sortdata, setsortdata] = useState("");
+  const [IsSorting, setIsSorting] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("Choose a sorting");
 
   const Username = useRef();
   const Password = useRef();
@@ -29,9 +43,16 @@ const AdminUsersPage = () => {
       const UsersData = await axios.get(
         `${APIURL}/Data/UsersData?limit=3&page=${CurrentPage}`
       );
+      const FullUsersData = await axios.get(
+        `${APIURL}/Data/FullUsersData`
+      );
+      setFulldata(FullUsersData.data.UsersData)
+      console.log(Fulldata);
+      
       setData(UsersData.data.UsersData);
       SetTotalPage(UsersData.data.TotalPages);
       SetBackupData(UsersData.data);
+      setsortdata("");
       console.log(TotalPage);
     } catch (error) {
       console.error("Error fetching data", error);
@@ -40,8 +61,39 @@ const AdminUsersPage = () => {
     }
   };
 
+  const Sorting = async (order) => {
+    setIsSorting(true);
+    if (order === "Alphabet_order") {
+      const UsersData = await axios.get(
+        `${APIURL}/Routes/Alphabet_ascending?limit=3&page=${CurrentPage}`
+      );
+      console.log(CurrentPage);
+
+      setData(UsersData.data.limitedResult);
+
+      setsortdata("Alphabet_order");
+    } else if (order === "Date_order") {
+      GetData();
+      setsortdata("date_sorted");
+    }
+    else if(order === "Alphabet_order_Reverse")
+    {
+      const UsersData = await axios.get(
+        `${APIURL}/Routes/Alphabet_decending?limit=3&page=${CurrentPage}`
+      );
+      console.log(CurrentPage);
+
+      setData(UsersData.data.limitedResult);
+      setsortdata("Alphabet_order_Reverse");
+    }
+  };
+
   useEffect(() => {
-    GetData();
+    if (IsSorting == false) {
+      GetData();
+    } else {
+      Sorting(Sortdata);
+    }
   }, [CurrentPage]);
 
   const GetSingleUser = (id) => {
@@ -237,60 +289,93 @@ const AdminUsersPage = () => {
 
   return (
     <>
-      <Dialog open={CreateDilog} onClose={() => SetCreateDilog(false)}>
-        <DialogContent className="p-6">
-          <form className="space-y-4">
-            <div>
-              <input
-                type="text"
-                placeholder="Username"
-                ref={Username}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-              />
-            </div>
-            <div>
-              <input
-                type="email"
-                placeholder="Email"
-                ref={Email}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                placeholder="Password"
-                ref={Password}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                ref={Confirm}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-              />
-            </div>
-            <div className="flex justify-end space-x-4">
-              <button
-                type="button"
-                className="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none"
-                onClick={() => SetCreateDilog(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                onClick={(e) => CreateUser(e)}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
-              >
-                Submit
-              </button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <Dialog
+  open={CreateDilog}
+  onClose={() => SetCreateDilog(false)}
+  PaperProps={{
+    style: {
+      width: "600px",
+      maxWidth: "90vw",
+      height: "500px",
+      maxHeight: "90vh",
+      display: "flex",
+      alignItems: "center", // Center content vertically
+      justifyContent: "center", // Center content horizontally
+    },
+  }}
+>
+  <DialogContent
+    className="p-6 flex items-center justify-center w-full h-full"
+    style={{ display: "flex", flexDirection: "column" }}
+  >
+    <form className="space-y-4 w-full max-w-md">
+      <div>
+        <label htmlFor="username" className="block text-gray-700 font-medium mb-1">
+          Username
+        </label>
+        <input
+          type="text"
+          id="username"
+          placeholder="Enter your username"
+          ref={Username}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+        />
+      </div>
+      <div>
+        <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter your email"
+          ref={Email}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+        />
+      </div>
+      <div>
+        <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+          Password
+        </label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          ref={Password}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+        />
+      </div>
+      <div>
+        <label htmlFor="confirm-password" className="block text-gray-700 font-medium mb-1">
+          Confirm Password
+        </label>
+        <input
+          type="password"
+          id="confirm-password"
+          placeholder="Re-enter your password"
+          ref={Confirm}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+        />
+      </div>
+      <div className="flex justify-between space-x-4">
+        <button
+          type="button"
+          className="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none"
+          onClick={() => SetCreateDilog(false)}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          onClick={(e) => CreateUser(e)}
+          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </DialogContent>
+</Dialog>
 
       <Dialog open={UpdateDilog} onClose={() => setUpdateDilog(false)}>
         <DialogContent className="bg-white rounded-lg shadow-xl max-w-lg p-6">
@@ -414,6 +499,40 @@ const AdminUsersPage = () => {
             />
           </div>
 
+          <div>
+            <FormControl style={{ width: "300px" }}>
+              <Select
+                label="Sorting"
+                value={selectedValue}
+                onChange={(e) => setSelectedValue(e.target.value)}
+                 // Update state on selection change
+              >
+                <MenuItem value="choose your value" disabled>
+                  Choose Sorting Option
+                </MenuItem>
+                <MenuItem
+                  value="A_Z_Sort"
+                  onClick={() => Sorting("Alphabet_order", Data)}
+                >
+                  A to Z
+                </MenuItem>
+                <MenuItem
+                  value="Z_A_Sort"
+                  onClick={() => Sorting("Alphabet_order_Reverse", Data)}
+                >
+                  Z to A
+                </MenuItem>
+                <MenuItem
+                  value="Date_order"
+                  onClick={() => Sorting("Date_order", Data)}
+                >
+                  Date Sort
+                </MenuItem>
+                <MenuItem value="Thirty">Thirty</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr className="bg-gradient-to-r from-purple-400 to-blue-600 text-white break-all whitespace-pre-wrap">
@@ -473,6 +592,11 @@ const AdminUsersPage = () => {
                   SetCurrentPage(1);
                 } else {
                   SetCurrentPage(CurrentPage - 1);
+                };
+                if(IsSorting == true)
+                {
+                  console.log("sorting is called");                  
+                  Sorting(Sortdata)
                 }
               }}
             >
@@ -483,6 +607,7 @@ const AdminUsersPage = () => {
               page={CurrentPage}
               hideNextButton
               hidePrevButton
+              onChange={(e, page) => SetCurrentPage(page)} // Update current page on pagination change
             />
             <button
               className="bg-gradient-to-r from-emerald-400 to-emerald-500 h-[40px] w-[70px] rounded-md text-white uppercase focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2"
@@ -491,6 +616,11 @@ const AdminUsersPage = () => {
                   SetCurrentPage(TotalPage);
                 } else {
                   SetCurrentPage(CurrentPage + 1);
+                };
+                if(IsSorting == true)
+                {
+                  console.log("sorting is called");   
+                  Sorting(Sortdata)
                 }
               }}
             >
