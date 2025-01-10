@@ -500,12 +500,11 @@ const AdminUsersPage = () => {
           </div>
 
           <div>
-            <FormControl style={{ width: "300px" }}>
+            <FormControl style={{ width: "300px"}}>
               <Select
-                label="Sorting"
-                value={selectedValue}
                 onChange={(e) => setSelectedValue(e.target.value)}
                  // Update state on selection change
+                 className="text-black"
               >
                 <MenuItem value="choose your value" disabled>
                   Choose Sorting Option
